@@ -1,0 +1,47 @@
+# coding: utf-8
+
+from tornado import ioloop, web
+import os
+
+static_path = os.path.join(os.path.dirname(__file__), 'static')
+
+
+# base handler , we can override some methods
+# chinese: 基础类，可以重写通用的方法
+class BaseHandler(web.RequestHandler):
+    pass
+
+# get, post will deal with get_request and post_request
+# chinese: get post方法分别对应get，post请求
+class HelloHandler(BaseHandler):
+
+    # self.get_argument will find paramter user send, self.write will response use
+    # chinese: get_argument会获取用户传的参数, write 用来响应用户
+    def get(self):
+        print('i have enter here!!')
+        user_name = self.get_argument('user')
+        self.write("hello {0}, your name is {0}".format(user_name))
+
+
+class LoginHandle(BaseHandler):
+
+    def get(self):
+        print('login will be sent to you!')
+        self.render('login.html')
+
+
+# init application
+# chinese: 初始化application
+application = web.Application([
+    (r"/", HelloHandler),
+    (r"/login", LoginHandle),
+], debug=True,
+    template_path=static_path,
+)
+
+if __name__ == '__main__':
+    # bind port and address
+    # chinese: 绑定端口
+    application.listen(port=11718, address='127.0.0.1')
+    ioloop.IOLoop.instance().start() # start server. chinese: 开启服务
+
